@@ -1,10 +1,12 @@
 "use client";
 
-import css from "./NoteForm.module.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent, ChangeEvent } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { createNote } from "@/lib/api";
 import { useNoteStore } from "@/lib/store/noteStore";
+
+import css from "./NoteForm.module.css";
 
 export type NoteTag = "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
 
@@ -15,7 +17,7 @@ interface FormValues {
 }
 
 interface NoteFormProps {
-  onClose: () => void; 
+  onClose: () => void;
 }
 
 export default function NoteForm({ onClose }: NoteFormProps) {
@@ -33,7 +35,7 @@ export default function NoteForm({ onClose }: NoteFormProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
       clearDraft();
-      onClose(); 
+      onClose();
     },
     onError: (err: unknown) => {
       console.error("Failed to create note:", err);
@@ -41,7 +43,7 @@ export default function NoteForm({ onClose }: NoteFormProps) {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     const updated = { ...formValues, [name]: value } as FormValues;
@@ -49,7 +51,7 @@ export default function NoteForm({ onClose }: NoteFormProps) {
     setDraft(updated);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     mutate(formValues);
   };
@@ -60,8 +62,8 @@ export default function NoteForm({ onClose }: NoteFormProps) {
         <label htmlFor="title">Title</label>
         <input
           id="title"
-          type="text"
           name="title"
+          type="text"
           value={formValues.title}
           onChange={handleChange}
           className={css.input}
@@ -76,9 +78,9 @@ export default function NoteForm({ onClose }: NoteFormProps) {
         <textarea
           id="content"
           name="content"
-          rows={8}
           value={formValues.content}
           onChange={handleChange}
+          rows={8}
           className={css.textarea}
           maxLength={500}
         />
@@ -102,11 +104,7 @@ export default function NoteForm({ onClose }: NoteFormProps) {
       </div>
 
       <div className={css.actions}>
-        <button
-          type="button"
-          className={css.cancelButton}
-          onClick={onClose} 
-        >
+        <button type="button" className={css.cancelButton} onClick={onClose}>
           Cancel
         </button>
         <button type="submit" className={css.submitButton}>
