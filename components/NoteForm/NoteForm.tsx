@@ -1,12 +1,10 @@
 "use client";
 
 import css from "./NoteForm.module.css";
-import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createNote } from "@/lib/api";
 import { useNoteStore } from "@/lib/store/noteStore";
-
 
 export type NoteTag = "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
 
@@ -16,15 +14,16 @@ interface FormValues {
   tag: NoteTag;
 }
 
-export default function NoteForm() {
-  const router = useRouter();
+interface NoteFormProps {
+  onClose: () => void; 
+}
+
+export default function NoteForm({ onClose }: NoteFormProps) {
   const queryClient = useQueryClient();
   const { draft, setDraft, clearDraft } = useNoteStore();
 
-  
   const [formValues, setFormValues] = useState<FormValues>(draft);
 
-  
   useEffect(() => {
     setFormValues(draft);
   }, [draft]);
@@ -33,22 +32,21 @@ export default function NoteForm() {
     mutationFn: (values: FormValues) => createNote(values),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
-      clearDraft(); 
-      router.back();
+      clearDraft();
+      onClose(); 
     },
     onError: (err: unknown) => {
       console.error("Failed to create note:", err);
     },
   });
 
-  
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     const updated = { ...formValues, [name]: value } as FormValues;
     setFormValues(updated);
-    setDraft(updated); 
+    setDraft(updated);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -107,7 +105,7 @@ export default function NoteForm() {
         <button
           type="button"
           className={css.cancelButton}
-          onClick={() => router.back()}
+          onClick={onClose} 
         >
           Cancel
         </button>

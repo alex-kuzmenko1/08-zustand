@@ -1,6 +1,5 @@
-
-import NoteForm from "@/components/NoteForm/NoteForm";
-import css from "./create.module.css";
+import NoteFormClient from "../../../../components/NoteForm/NoteformClient";
+import css from "./CreateNote.module.css";
 
 export const metadata = {
   title: "Create note — NoteHub",
@@ -18,7 +17,7 @@ export default function CreateNotePage() {
     <main className={css.main}>
       <div className={css.container}>
         <h1 className={css.title}>Create note</h1>
-        <NoteForm />
+        <NoteFormClient />
       </div>
     </main>
   );
